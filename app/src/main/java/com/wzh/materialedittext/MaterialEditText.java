@@ -18,7 +18,7 @@ public class MaterialEditText extends androidx.appcompat.widget.AppCompatEditTex
     private static final int TEXT_SIZE = (int) Utils.dp2px(14);
     private static final int TOP_MARGIN = (int) Utils.dp2px(8);
     private static final int HORIZONTAL_OFFSET = (int) Utils.dp2px(5);
-    private static final int VERTICAL_OFFSET = (int) Utils.dp2px(15);
+    private static final int VERTICAL_OFFSET = (int) Utils.dp2px(22);
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     // 是否显示悬空FloatingLabel
@@ -27,8 +27,7 @@ public class MaterialEditText extends androidx.appcompat.widget.AppCompatEditTex
     // FloatingLabel的不透明度
     private float floatingLabelFraction;
 
-    // FloatingLabel的位置
-    private float floatingLabelY = Utils.dp2px(8);
+    private ObjectAnimator fractionAnim;
 
     public MaterialEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -47,21 +46,11 @@ public class MaterialEditText extends androidx.appcompat.widget.AppCompatEditTex
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (isShowFloatingLabel && TextUtils.isEmpty(charSequence)) {
                     // FloatingLabel 消失动画
-                    // 透明度
-                    ObjectAnimator fractionAnim = ObjectAnimator.ofFloat(MaterialEditText.this, "floatingLabelFraction", 0);
-                    fractionAnim.start();
-                    // 向下移动
-                    ObjectAnimator translateAnim = ObjectAnimator.ofFloat(MaterialEditText.this, "floatingLabelY", getFloatingLabelY() + Utils.dp2px(8));
-                    translateAnim.start();
+                    getFractionAnimator().start();
                     isShowFloatingLabel = false;
                 } else if (!isShowFloatingLabel && !TextUtils.isEmpty(charSequence)) {
                     // FloatingLabel 出现动画
-                    // 透明度
-                    ObjectAnimator fractionAnim = ObjectAnimator.ofFloat(MaterialEditText.this, "floatingLabelFraction", 1);
-                    fractionAnim.start();
-
-                    ObjectAnimator translateAnim = ObjectAnimator.ofFloat(MaterialEditText.this, "floatingLabelY", getFloatingLabelY() - Utils.dp2px(8));
-                    translateAnim.start();
+                    getFractionAnimator().reverse();
                     isShowFloatingLabel = true;
                 }
             }
@@ -82,22 +71,24 @@ public class MaterialEditText extends androidx.appcompat.widget.AppCompatEditTex
         invalidate();
     }
 
-    public float getFloatingLabelY() {
-        return floatingLabelY;
+    /**
+     * 透明度动画
+     * 把动画抽取出来，避免每次调用都创建ObjectAnimator对象
+     *
+     * 动画如果设置了起始值和终点值，那么可以通过reverse()方法来反转动画
+     */
+    private ObjectAnimator getFractionAnimator() {
+        if (fractionAnim == null)
+            fractionAnim = ObjectAnimator.ofFloat(MaterialEditText.this, "floatingLabelFraction", 1, 0);
+        return fractionAnim;
     }
 
-    public void setFloatingLabelY(float floatingLabelY) {
-        this.floatingLabelY = floatingLabelY;
-        invalidate();
-    }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         paint.setAlpha((int) (0xff * floatingLabelFraction));
-        canvas.save();
-        canvas.translate(0, floatingLabelY);
-        canvas.drawText(getHint().toString(), HORIZONTAL_OFFSET, VERTICAL_OFFSET, paint);
-        canvas.restore();
+        float offSetY = Utils.dp2px(16) * (1 - floatingLabelFraction);
+        canvas.drawText(getHint().toString(), HORIZONTAL_OFFSET, VERTICAL_OFFSET + offSetY, paint);
     }
 }
