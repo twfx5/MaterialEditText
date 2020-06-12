@@ -2,6 +2,7 @@ package com.wzh.materialedittext;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.text.Editable;
@@ -31,9 +32,23 @@ public class MaterialEditText extends androidx.appcompat.widget.AppCompatEditTex
 
     public MaterialEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init(context, attrs);
     }
 
     {
+//        构造代码块：类中直接用{}定义，每一次创建对象时执行。
+//        执行顺序优先级：静态块,main(),构造块,构造方法。
+    }
+
+    private void init(Context context, AttributeSet attrs) {
+        // attrs是定义在xml里面的属性：id，width、height、hint、weather等
+        // 这一步是取我们自定义属性的数组
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.MaterialEditText);
+        // 这一步是取自定义属性数组的哪一个，第一个参数是index，第二个参数是默认值
+        boolean weather = typedArray.getBoolean(R.styleable.MaterialEditText_weather, true);
+        // 用完后回收
+        typedArray.recycle();
+
         setPadding(getPaddingLeft(), getPaddingTop() + TEXT_SIZE + TOP_MARGIN, getPaddingRight(), getPaddingBottom());
         paint.setTextSize(TEXT_SIZE);
         addTextChangedListener(new TextWatcher() {
