@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="MaterialEditText">
-
+        <!--
+        string 文字
+        color 颜色
+        reference 资源(例如drawable)
+        dimension 宽高、文字的大小
+        -->
         <attr name="weather" format="boolean"/>
 
     </declare-styleable>

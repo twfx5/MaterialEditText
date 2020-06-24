@@ -38,6 +38,11 @@ public class MaterialEditText extends androidx.appcompat.widget.AppCompatEditTex
     {
 //        构造代码块：类中直接用{}定义，每一次创建对象时执行。
 //        执行顺序优先级：静态块,main(),构造块,构造方法。
+        /**
+         * 父类静态变量--》父类静态代码块--》--》子类静态变量--》子类静态代码块--》
+         * 父类非静态变量--》父类非静态代码块--》父类构造方法--》
+         * 子类非静态变量--》子类非静态代码块--》子类构造方法
+         */
     }
 
     private void init(Context context, AttributeSet attrs) {
